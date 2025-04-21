@@ -1,544 +1,838 @@
-  <!DOCTYPE html>
-  <html>
-  <head>
-      <title>NCubed Declaraties</title>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-      <style>
-          body {
-              font-family: Arial, sans-serif;
-              margin: 0;
-              padding: 20px;
-              background-color: #f5f5f5;
-          }
-          .container {
-              max-width: 1200px;
-              margin: 0 auto;
-              background-color: white;
-              padding: 20px;
-              border-radius: 8px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          }
-          h1 {
-              color: #333;
-              margin-bottom: 20px;
-          }
-          .upload-container {
-              border: 2px dashed #2196F3;
-              padding: 20px;
-              text-align: center;
-              margin: 20px 0;
-              border-radius: 8px;
-              background-color: #f8f9fa;
-          }
-          .dragover {
-              background-color: #e3f2fd;
-              border-color: #1976D2;
-          }
-          button {
-              background-color: #2196F3;
-              color: white;
-              padding: 10px 20px;
-              border: none;
-              border-radius: 4px;
-              cursor: pointer;
-              margin: 5px;
-              font-size: 14px;
-              transition: background-color 0.3s;
-          }
-          button:hover {
-              background-color: #1976D2;
-          }
-          .clear-button {
-              background-color: #f44336;
-          }
-          .clear-button:hover {
-              background-color: #d32f2f;
-          }
-          .mail-button {
-              background-color: #4CAF50;
-          }
-          .mail-button:hover {
-              background-color: #388E3C;
-          }
-          table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 20px 0;
-              background-color: white;
-          }
-          th, td {
-              border: 1px solid #ddd;
-              padding: 12px;
-              text-align: left;
-          }
-          th {
-              background-color: #f5f5f5;
-              font-weight: bold;
-          }
-          tr:nth-child(even) {
-              background-color: #f9f9f9;
-          }
-          tr:hover {
-              background-color: #f5f5f5;
-          }
-          .preview-container {
-              display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-              gap: 15px;
-              margin: 20px 0;
-          }
-          .receipt-container {
-              position: relative;
-              background: white;
-              padding: 10px;
-              border-radius: 8px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          }
-          .receipt-image {
-              width: 100%;
-              height: auto;
-              border-radius: 4px;
-              display: block;
-          }
-          .receipt-number {
-              position: absolute;
-              top: 5px;
-              left: 5px;
-              background-color: #2196F3;
-              color: white;
-              padding: 5px 10px;
-              border-radius: 4px;
-              font-weight: bold;
-          }
-          .editable-amount {
-              cursor: pointer;
-              padding: 5px;
-              border: 1px solid transparent;
-              border-radius: 4px;
-          }
-          .editable-amount:hover {
-              background-color: #e3f2fd;
-              border-color: #2196F3;
-          }
-          .editable-amount input {
-              width: 100px;
-              padding: 5px;
-              border: 1px solid #2196F3;
-              border-radius: 4px;
-          }
-          .category-select {
-              width: 100%;
-              padding: 8px;
-              border: 1px solid #ddd;
-              border-radius: 4px;
-              background-color: white;
-          }
-          .warning {
-              background-color: #fff3cd;
-              color: #856404;
-              padding: 12px;
-              margin: 10px 0;
-              border: 1px solid #ffeeba;
-              border-radius: 4px;
-              display: none;
-          }
-          #loadingIndicator {
-              display: none;
-              text-align: center;
-              padding: 20px;
-              background-color: rgba(255,255,255,0.8);
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              border-radius: 8px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-          }
-          .total-row {
-              font-weight: bold;
-              background-color: #e3f2fd !important;
-          }
-      </style>
-  </head>
-  <body>
-      <div class="container">
-          <h1>NCubed Declaraties</h1>
-          
-          <div class="upload-container" id="dropZone">
-              <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
-              <button onclick="document.getElementById('photoInput').click()">Upload Bonnetjes</button>
-              <p>Of sleep bonnetjes hierheen</p>
-              <div id="previewContainer" class="preview-container"></div>
-          </div>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <title>NCubed Declaraties</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NCubed Declaraties">
+    <meta name="theme-color" content="#2196F3">
+    
+    <!-- Required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
 
-          <div id="warning" class="warning"></div>
-          <div id="loadingIndicator">Verwerken...</div>
+    <style>
+        :root {
+            --blue-color: #2196F3;
+            --blue-dark: #1976D2;
+            --blue-light: #BBDEFB;
+            --pink-color: #E91E63;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
+            --background-color: #f5f5f5;
+            --border-color: #ddd;
+            --text-color: #333;
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        }
 
-          <div id="declarationContainer">
-              <table id="declarationTable">
-                  <thead>
-                      <tr>
-                          <th>Bon #</th>
-                          <th>Datum</th>
-                          <th>Naam</th>
-                          <th>Categorie</th>
-                          <th>Bedrag</th>
-                          <th>Actie</th>
-                      </tr>
-                  </thead>
-                  <tbody id="declarationBody"></tbody>
-                  <tfoot>
-                      <tr class="total-row">
-                          <td colspan="4">Totaal</td>
-                          <td id="declarationTotal">€0,00</td>
-                          <td></td>
-                      </tr>
-                  </tfoot>
-              </table>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-              <div style="margin-top: 20px; text-align: right;">
-                  <button onclick="clearAll()" class="clear-button">Clear Alles</button>
-                  <button onclick="generatePDF()">Download PDF</button>
-                  <button onclick="sendEmailOnly()" class="mail-button">Verstuur Mail</button>
-              </div>
-          </div>
-      </div>
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: calc(20px + var(--safe-area-inset-top)) 20px calc(20px + var(--safe-area-inset-bottom));
+            min-height: 100vh;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
 
-      <script>
-          const CATEGORIES = [
-              "Reiskosten - OV",
-              "Reiskosten - Auto",
-              "Reiskosten - Taxi",
-              "Reiskosten - Vliegtickets",
-              "Reiskosten - Parkeren",
-              "Kantoorartikelen",
-              "Kantoor - Meubilair",
-              "Kantoor - Apparatuur",
-              "ICT - Hardware",
-              "ICT - Software",
-              "ICT - Cloud Services",
-              "ICT - Telefonie",
-              "Representatie - Lunch",
-              "Representatie - Diner",
-              "Representatie - Koffie",
-              "Representatie - Relatiegeschenken",
-              "Opleiding - Cursussen",
-              "Opleiding - Boeken",
-              "Opleiding - Conferenties",
-              "Marketing - Advertenties",
-              "Marketing - Promotiemateriaal",
-              "Verblijfskosten - Hotel",
-              "Verblijfskosten - Overig",
-              "Verzekeringen",
-              "Abonnementen",
-              "Overig"
-          ].sort();
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-          const MONICA_API_KEY = 'sk-74PDyAlNKWSTMSF00qpvh0Z0WuGzpriVmWDBdMAUHED9PSmGLcMCZ4ByElHRwX7ch8wgghmnusYT2Zcb2QLpRbaG_heD';
-          const IMGBB_API_KEY = '56fb3a05b4ed17c9e72b3cfb52caddb8';
-          
-          let processedData = [];
-          let receiptImages = [];
+        h1 {
+            color: var(--blue-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
 
-          // Drag and drop handlers
-          const dropZone = document.getElementById('dropZone');
-          const photoInput = document.getElementById('photoInput');
+        .upload-container {
+            border: 2px dashed var(--blue-color);
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 10px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
 
-          dropZone.addEventListener('dragover', (e) => {
-              e.preventDefault();
-              dropZone.classList.add('dragover');
-          });
+        .upload-container.dragover {
+            background-color: var(--blue-light);
+            border-color: var(--blue-color);
+        }
 
-          dropZone.addEventListener('dragleave', () => {
-              dropZone.classList.remove('dragover');
-          });
+        .preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
 
-          dropZone.addEventListener('drop', (e) => {
-              e.preventDefault();
-              dropZone.classList.remove('dragover');
-              handleFiles(e.dataTransfer.files);
-          });
+        .receipt-preview {
+            position: relative;
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
 
-          photoInput.addEventListener('change', (e) => {
-              handleFiles(e.target.files);
-          });
+        .receipt-preview:hover {
+            transform: scale(1.02);
+        }
 
-          function clearAll() {
-              document.getElementById('previewContainer').innerHTML = '';
-              document.getElementById('declarationBody').innerHTML = '';
-              document.getElementById('declarationTotal').textContent = '€0,00';
-              processedData = [];
-              receiptImages = [];
-              photoInput.value = '';
-          }
+        .receipt-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: var(--blue-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
 
-          async function handleFiles(files) {
-              const previewContainer = document.getElementById('previewContainer');
-              
-              for (const file of files) {
-                  if (file.type.startsWith('image/')) {
-                      const reader = new FileReader();
-                      
-                      reader.onload = async (e) => {
-                          const receiptNumber = receiptImages.length + 1;
-                          
-                          const receiptContainer = document.createElement('div');
-                          receiptContainer.className = 'receipt-container';
-                          
-                          const numberLabel = document.createElement('div');
-                          numberLabel.className = 'receipt-number';
-                          numberLabel.textContent = receiptNumber;
-                          
-                          const img = document.createElement('img');
-                          img.src = e.target.result;
-                          img.className = 'receipt-image';
-                          
-                          receiptContainer.appendChild(numberLabel);
-                          receiptContainer.appendChild(img);
-                          previewContainer.appendChild(receiptContainer);
-                          
-                          receiptImages.push({
-                              number: receiptNumber,
-                              data: e.target.result
-                          });
-                          
-                          await processImage(e.target.result, receiptNumber);
-                      };
-                      
-                      reader.readAsDataURL(file);
-                  }
-              }
-          }
+        .receipt-image {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            display: block;
+        }
 
-          function makeEditable(element) {
-              const currentValue = element.textContent.replace('€', '');
-              const input = document.createElement('input');
-              input.type = 'number';
-              input.step = '0.01';
-              input.value = currentValue;
-              
-              input.onblur = function() {
-                  const newValue = parseFloat(this.value);
-                  if (!isNaN(newValue)) {
-                      element.textContent = `€${newValue.toFixed(2)}`;
-                  } else {
-                      element.textContent = `€${currentValue}`;
-                  }
-                  updateTotal();
-              };
-              
-              input.onkeypress = function(e) {
-                  if (e.key === 'Enter') {
-                      this.blur();
-                  }
-              };
-              
-              element.textContent = '';
-              element.appendChild(input);
-              input.focus();
-          }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+            background: white;
+        }
 
-          async function processImage(imageData, receiptNumber) {
-              const loadingIndicator = document.getElementById('loadingIndicator');
-              try {
-                  loadingIndicator.style.display = 'block';
-                  
-                  const base64Image = imageData.split(',')[1];
-                  const formData = new FormData();
-                  formData.append('image', base64Image);
-                  
-                  const uploadResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                      method: 'POST',
-                      body: formData
-                  });
-                  
-                  if (!uploadResponse.ok) throw new Error('Upload failed');
-                  
-                  const uploadResult = await uploadResponse.json();
-                  const imageUrl = uploadResult.data.url;
-                  
-                  const response = await fetch('https://old-voice-773e.r-lutjenkossink.workers.dev/monica', {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${MONICA_API_KEY}`
-                      },
-                      body: JSON.stringify({
-                          model: "gpt-4o",
-                          messages: [{
-                              role: "user",
-                              content: [
-                                  {
-                                      type: "text",
-                                      text: "Analyseer deze bon. Geef de datum, naam van het bedrijf en totaalbedrag. Format: datum, naam, bedrag"
-                                  },
-                                  {
-                                      type: "image_url",
-                                      image_url: {
-                                          url: imageUrl
-                                      }
-                                  }
-                              ]
-                          }]
-                      })
-                  });
-                  
-                  if (!response.ok) throw new Error('Analysis failed');
-                  
-                  const data = await response.json();
-                  addToTable(data.choices[0].message.content, receiptNumber);
-                  
-              } catch (error) {
-                  showWarning(`Fout bij verwerking van bon #${receiptNumber}: ${error.message}`);
-              } finally {
-                  loadingIndicator.style.display = 'none';
-              }
-          }
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
 
-          function addToTable(content, receiptNumber) {
-              const tbody = document.getElementById('declarationBody');
-              const [date, name, amount] = content.split(',').map(item => item.trim());
-              
-              const row = document.createElement('tr');
-              const parsedAmount = parseFloat(amount);
-              
-              const amountCell = document.createElement('td');
-              amountCell.className = 'editable-amount';
-              amountCell.textContent = !isNaN(parsedAmount) ? `€${parsedAmount.toFixed(2)}` : '€0.00';
-              amountCell.onclick = () => makeEditable(amountCell);
+        th {
+            background-color: var(--pink-color);
+            color: white;
+            font-weight: 500;
+        }
 
-              const categorySelect = document.createElement('select');
-              categorySelect.className = 'category-select';
-              categorySelect.innerHTML = CATEGORIES.map(cat => 
-                  `<option value="${cat}">${cat}</option>`
-              ).join('');
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-              row.innerHTML = `
-                  <td>${receiptNumber}</td>
-                  <td>${date || 'Onbekend'}</td>
-                  <td>${name || 'Onbekend'}</td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                      <button onclick="this.closest('tr').remove(); updateTotal()" class="clear-button">
-                          ✕
-                      </button>
-                  </td>
-              `;
+        tr:hover {
+            background-color: #f5f5f5;
+        }
 
-              row.cells[3].appendChild(categorySelect);
-              row.cells[4].replaceWith(amountCell);
-              
-              tbody.appendChild(row);
-              updateTotal();
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
-              if (isNaN(parsedAmount)) {
-                  showWarning(`Bon #${receiptNumber}: Geen bedrag gevonden. Klik op €0.00 om handmatig in te vullen.`);
-              }
-          }
+        .button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
 
-          function showWarning(message) {
-              const warning = document.getElementById('warning');
-              warning.textContent = message;
-              warning.style.display = 'block';
-              setTimeout(() => warning.style.display = 'none', 5000);
-          }
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-          function updateTotal() {
-              const rows = document.querySelectorAll('#declarationBody tr');
-              let total = 0;
-              
-              rows.forEach(row => {
-                  const amount = parseFloat(row.cells[4].textContent.replace('€', ''));
-                  if (!isNaN(amount)) total += amount;
-              });
-              
-              document.getElementById('declarationTotal').textContent = `€${total.toFixed(2)}`;
-          }
+        .button:active {
+            transform: translateY(0);
+        }
 
-          function generatePDF() {
-              const { jsPDF } = window.jspdf;
-              const doc = new jsPDF();
-              
-              const currentDate = new Date().toLocaleDateString('nl-NL');
-              
-              // Add header
-              doc.setFontSize(16);
-              doc.text('Declaratie Overzicht', 20, 20);
-              
-              doc.setFontSize(12);
-              doc.text(`Datum: ${currentDate}`, 20, 30);
-              
-              // Add table
-              const tableData = Array.from(document.querySelectorAll('#declarationBody tr')).map(row => [
-                  row.cells[0].textContent,
-                  row.cells[1].textContent,
-                  row.cells[2].textContent,
-                  row.cells[3].querySelector('select').value,
-                  row.cells[4].textContent
-              ]);
+        .button-blue {
+            background-color: var(--blue-color);
+            color: white;
+        }
 
-              doc.autoTable({
-                  startY: 40,
-                  head: [['Bon #', 'Datum', 'Naam', 'Categorie', 'Bedrag']],
-                  body: tableData,
-                  foot: [[
-                      {content: 'Totaal', colSpan: 4},
-                      document.getElementById('declarationTotal').textContent
-                  ]],
-              });
+        .button-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
 
-              // Add images
-              let y = doc.lastAutoTable.finalY + 20;
-              
-              receiptImages.forEach((receipt, index) => {
-                  if (y + 100 > doc.internal.pageSize.height) {
-                      doc.addPage();
-                      y = 20;
-                  }
-                  
-                  doc.text(`Bon #${receipt.number}:`, 20, y);
-                  y += 10;
-                  
-                  try {
-                      doc.addImage(receipt.data, 'JPEG', 20, y, 170, 0);
-                      y += 120;
-                  } catch (error) {
-                      console.error('Error adding image:', error);
-                  }
-              });
-              
-              doc.save(`Declaratie_${currentDate.replace(/\//g, '-')}.pdf`);
-          }
+        .button-success {
+            background-color: var(--success-color);
+            color: white;
+        }
 
-          function sendEmailOnly() {
-              const rows = document.querySelectorAll('#declarationBody tr');
-              const categories = {};
-              
-              rows.forEach(row => {
-                  const category = row.cells[3].querySelector('select').value;
-                  const amount = parseFloat(row.cells[4].textContent.replace('€', ''));
-                  if (!categories[category]) categories[category] = 0;
-                  if (!isNaN(amount)) categories[category] += amount;
-              });
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
-              let emailBody = 'Beste,\n\nHierbij mijn declaratie.\n\nSpecificatie:\n\n';
-              
-              Object.entries(categories)
-                  .sort(([a], [b]) => a.localeCompare(b))
-                  .forEach(([category, amount]) => {
-                      emailBody += `${category}: €${amount.toFixed(2)}\n`;
-                  });
-              
-              emailBody += `\nTotaalbedrag: ${document.getElementById('declarationTotal').textContent}\n\n`;
-              emailBody += 'Met vriendelijke groet,\nRené Lutjenkossink';
-              
-              const mailtoLink = `mailto:invoices@ncubed.nl?cc=r.lutjenkossink@ncubed.nl&subject=Declaratie ${new Date().toLocaleDateString('nl-NL')}&body=${encodeURIComponent(emailBody)}`;
-              window.location.href = mailtoLink;
-          }
-      </script>
-  </body>
-  </html>
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--blue-light);
+            border-top: 4px solid var(--blue-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: calc(20px + var(--safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .category-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .editable-cell {
+            cursor: pointer;
+        }
+
+        .editable-cell:hover {
+            background-color: var(--blue-light);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                margin: 0 auto;
+            }
+
+            .button-container {
+                justify-content: flex-end;
+            }
+
+            .button {
+                width: auto;
+            }
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            body {
+                padding-top: calc(20px + env(safe-area-inset-top));
+                padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            }
+
+            .button {
+                padding: 15px 20px;
+            }
+
+            select {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NCubed Declaraties</h1>
+        
+        <div class="upload-container" id="dropZone">
+            <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+            <button class="button button-blue" onclick="document.getElementById('photoInput').click()">
+                Upload Bonnetjes
+            </button>
+            <p>Of sleep bonnetjes hierheen</p>
+        </div>
+
+        <div id="previewContainer" class="preview-container"></div>
+
+        <div id="declarationContainer">
+            <table id="declarationTable">
+                <thead>
+                    <tr>
+                        <th>Bon #</th>
+                        <th>Datum</th>
+                        <th>Naam</th>
+                        <th>Categorie</th>
+                        <th>Bedrag</th>
+                        <th>Actie</th>
+                    </tr>
+                </thead>
+                <tbody id="declarationBody"></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4"><strong>Totaal</strong></td>
+                        <td id="declarationTotal">€0,00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="button-container">
+                <button class="button button-danger" onclick="clearAll()">Wis Alles</button>
+                <button class="button button-blue" onclick="generatePDF()">Download PDF</button>
+                <button class="button button-success" onclick="sendEmailOnly()">Verstuur Mail</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        const CATEGORIES = [
+            "Reiskosten - OV",
+            "Reiskosten - Auto",
+            "Reiskosten - Taxi",
+            "Reiskosten - Vliegtickets",
+            "Reiskosten - Parkeren",
+            "Kantoorartikelen",
+            "Kantoor - Meubilair",
+            "Kantoor - Apparatuur",
+            "ICT - Hardware",
+            "ICT - Software",
+            "ICT - Cloud Services",
+            "ICT - Telefonie",
+            "Representatie - Lunch",
+            "Representatie - Diner",
+            "Representatie - Koffie",
+            "Representatie - Relatiegeschenken",
+            "Opleiding - Cursussen",
+            "Opleiding - Boeken",
+            "Opleiding - Conferenties",
+            "Marketing - Advertenties",
+            "Marketing - Promotiemateriaal",
+            "Verblijfskosten - Hotel",
+            "Verblijfskosten - Overig",
+            "Verzekeringen",
+            "Abonnementen",
+            "Overig"
+        ].sort();
+
+        let worker = null;
+        let receiptImages = [];
+        let nextReceiptNumber = 1;
+
+        const dropZone = document.getElementById('dropZone');
+        const photoInput = document.getElementById('photoInput');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        photoInput.addEventListener('change', handleFileSelect, false);
+
+        function highlight(e) {
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading(show = true) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        async function initializeWorker() {
+            if (!worker) {
+                worker = await Tesseract.createWorker();
+                await worker.loadLanguage('nld');
+                await worker.initialize('nld');
+            }
+        }
+
+        async function handleFiles(files) {
+            showLoading(true);
+            
+            try {
+                await initializeWorker();
+                
+                for (const file of files) {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = async (e) => {
+                            addPreview(e.target.result, nextReceiptNumber);
+                            receiptImages.push({
+                                number: nextReceiptNumber,
+                                data: e.target.result
+                            });
+                            await processImage(e.target.result, nextReceiptNumber);
+                            nextReceiptNumber++;
+                            updateReceiptNumbers();
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                }
+            } catch (error) {
+                showNotification(`Fout bij verwerken van bonnen: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function addPreview(imageData, number) {
+            const previewContainer = document.getElementById('previewContainer');
+            
+            const preview = document.createElement('div');
+            preview.className = 'receipt-preview';
+            preview.dataset.number = number;
+            
+            const numberLabel = document.createElement('div');
+            numberLabel.className = 'receipt-number';
+            numberLabel.textContent = number;
+            
+            const img = document.createElement('img');
+            img.src = imageData;
+            img.className = 'receipt-image';
+            img.alt = `Bon ${number}`;
+            
+            preview.appendChild(numberLabel);
+            preview.appendChild(img);
+            previewContainer.appendChild(preview);
+        }
+
+        function updateReceiptNumbers() {
+            const rows = document.querySelectorAll('#declarationBody tr');
+            const previews = document.querySelectorAll('.receipt-preview');
+            
+            rows.forEach((row, index) => {
+                const newNumber = index + 1;
+                row.cells[0].textContent = newNumber;
+                row.dataset.number = newNumber;
+            });
+
+            previews.forEach((preview, index) => {
+                const newNumber = index + 1;
+                preview.querySelector('.receipt-number').textContent = newNumber;
+                preview.dataset.number = newNumber;
+            });
+
+            receiptImages = receiptImages.map((img, index) => ({
+                ...img,
+                number: index + 1
+            }));
+
+            nextReceiptNumber = Math.max(rows.length, previews.length) + 1;
+        }
+
+        function removeRow(button) {
+            const row = button.closest('tr');
+            const number = parseInt(row.dataset.number);
+            
+            const preview = document.querySelector(`.receipt-preview[data-number="${number}"]`);
+            if (preview) {
+                preview.remove();
+            }
+            
+            receiptImages = receiptImages.filter(img => img.number !== number);
+            row.remove();
+            
+            updateReceiptNumbers();
+            updateTotal();
+        }
+
+        async function processImage(imageData, receiptNumber) {
+            try {
+                const { data: { text } } = await worker.recognize(imageData);
+                const result = extractInformation(text);
+                addToTable(result, receiptNumber);
+            } catch (error) {
+                console.error('Error processing image:', error);
+                addToTable({
+                    date: '',
+                    name: 'Handmatig invullen',
+                    amount: '0.00'
+                }, receiptNumber);
+            }
+        }
+
+        function extractInformation(text) {
+            const lines = text.split('\n');
+            
+            const datePattern = /(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/;
+            const dateMatch = text.match(datePattern);
+            const date = dateMatch ? formatDate(dateMatch[1]) : '';
+
+            const name = lines[0] || 'Onbekend';
+
+            const amountPattern = /(?:totaal|total|te betalen|sum|eur|€)\s*[€]?\s*(\d+[.,]\d{2})/i;
+            const amountMatch = text.match(amountPattern);
+            const amount = amountMatch 
+                ? amountMatch[1].replace(',', '.')
+                : findHighestAmount(text);
+
+            return { date, name: name.trim(), amount };
+        }
+
+        function findHighestAmount(text) {
+            const amounts = text.match(/\d+[.,]\d{2}/g) || [];
+            const numbers = amounts.map(amount => 
+                parseFloat(amount.replace(',', '.'))
+            );
+            return Math.max(0, ...numbers).toFixed(2);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            
+            const parts = dateStr.split(/[-/]/);
+            if (parts.length !== 3) return dateStr;
+            
+            let [day, month, year] = parts;
+            
+            if (year.length === 2) {
+                year = '20' + year;
+            }
+            
+            day = day.padStart(2, '0');
+            month = month.padStart(2, '0');
+            
+            return `${day}-${month}-${year}`;
+        }
+
+        function makeEditable(element) {
+            const currentValue = element.textContent.replace('€', '');
+            const input = document.createElement('input');
+            input.type = element.textContent.includes('€') ? 'number' : 'text';
+            input.step = '0.01';
+            input.value = currentValue;
+            input.style.width = '100%';
+            input.style.padding = '4px';
+            input.style.border = '1px solid #ddd';
+            input.style.borderRadius = '4px';
+            
+            input.onblur = function() {
+                if (input.type === 'number') {
+                    const amount = parseFloat(this.value);
+                    element.textContent = !isNaN(amount) ? `€${amount.toFixed(2)}` : '€0.00';
+                } else {
+                    element.textContent = this.value;
+                }
+                updateTotal();
+            };
+            
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    this.blur();
+                }
+            };
+            
+            element.textContent = '';
+            element.appendChild(input);
+            input.focus();
+        }
+
+        function addToTable(result, receiptNumber) {
+            const tbody = document.getElementById('declarationBody');
+            const row = document.createElement('tr');
+            row.dataset.number = receiptNumber;
+            
+            const amountCell = document.createElement('td');
+            amountCell.className = 'editable-cell';
+            amountCell.textContent = `€${parseFloat(result.amount).toFixed(2)}`;
+            amountCell.onclick = () => makeEditable(amountCell);
+
+            const categorySelect = document.createElement('select');
+            categorySelect.className = 'category-select';
+            categorySelect.innerHTML = CATEGORIES.map(cat => 
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+
+            row.innerHTML = `
+                <td>${receiptNumber}</td>
+                <td class="editable-cell" onclick="makeEditable(this)">${result.date}</td>
+                <td class="editable-cell" onclick="makeEditable(this)">${result.name}</td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button class="button button-danger" style="padding: 4px 8px; width: auto;" onclick="removeRow(this)">✕</button>
+                </td>
+            `;
+
+            row.cells[3].appendChild(categorySelect);
+            row.cells[4].replaceWith(amountCell);
+            
+            tbody.appendChild(row);
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const rows = document.querySelectorAll('#declarationBody tr');
+            let total = 0;
+            
+            rows.forEach(row => {
+                const amount = parseFloat(row.cells[4].textContent.replace('€', ''));
+                if (!isNaN(amount)) total += amount;
+            });
+            
+            document.getElementById('declarationTotal').textContent = `€${total.toFixed(2)}`;
+        }
+
+        function clearAll() {
+            if (confirm('Weet je zeker dat je alles wilt wissen?')) {
+                document.getElementById('previewContainer').innerHTML = '';
+                document.getElementById('declarationBody').innerHTML = '';
+                document.getElementById('declarationTotal').textContent = '€0,00';
+                receiptImages = [];
+                nextReceiptNumber = 1;
+                photoInput.value = '';
+                showNotification('Alles is gewist');
+            }
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const currentDate = new Date().toLocaleDateString('nl-NL');
+            
+            // Afzender gegevens
+            doc.setFontSize(10);
+            doc.text([
+                'Afzender:',
+                'René Lutjenkossink',
+                'Wilhelminastraat 73',
+                '7001 GV Doetinchem',
+                '',
+                'Tel: +31 (0)610750680',
+                'E-mail: rene.lutjenkossink@ncubed.nl',
+                'IBAN: NL21RABO 0370019466'
+            ], 20, 20);
+            
+            // Ontvanger gegevens
+            doc.text([
+                'Ontvanger:',
+                'Ncubed B.V.',
+                'Van Deventerlaan 30-40',
+                '3528 AE Utrecht',
+                't.a.v. Rob Visser'
+            ], 120, 20);
+            
+            // Titel en datum
+            doc.setFontSize(16);
+            doc.text('Declaratie Overzicht', 20, 70);
+            
+            doc.setFontSize(12);
+            doc.text(`Datum: ${currentDate}`, 20, 80);
+            
+            // Tabel met declaraties
+            const tableData = Array.from(document.querySelectorAll('#declarationBody tr')).map(row => [
+                row.cells[0].textContent,
+                row.cells[1].textContent,
+                row.cells[2].textContent,
+                row.cells[3].querySelector('select').value,
+                row.cells[4].textContent
+            ]);
+
+            doc.autoTable({
+                startY: 90,
+                head: [['Bon #', 'Datum', 'Naam', 'Categorie', 'Bedrag']],
+                body: tableData,
+                foot: [[
+                    {content: 'Totaal', colSpan: 4},
+                    document.getElementById('declarationTotal').textContent
+                ]],
+                theme: 'grid',
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                },
+                headStyles: {
+                    fillColor: [233, 30, 99], // Knal roze (#E91E63)
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                footStyles: {
+                    fillColor: [187, 222, 251],
+                    textColor: 0,
+                    fontStyle: 'bold'
+                }
+            });
+
+            // Bonnen toevoegen
+            let y = doc.lastAutoTable.finalY + 20;
+            
+            receiptImages.forEach((receipt) => {
+                if (y + 80 > doc.internal.pageSize.height) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.text(`Bon #${receipt.number}:`, 20, y);
+                y += 10;
+                
+                try {
+                    doc.addImage(receipt.data, 'JPEG', 20, y, 120, 0);
+                    
+                    const imgData = new Image();
+                    imgData.src = receipt.data;
+                    const aspectRatio = imgData.height / imgData.width;
+                    const imgHeight = 120 * aspectRatio;
+                    
+                    const row = document.querySelector(`#declarationBody tr[data-number="${receipt.number}"]`);
+                    const summary = [
+                        `Datum: ${row.cells[1].textContent}`,
+                        `Naam: ${row.cells[2].textContent}`,
+                        `Categorie: ${row.cells[3].querySelector('select').value}`,
+                        `Bedrag: ${row.cells[4].textContent}`
+                    ];
+                    
+                    summary.forEach((line, i) => {
+                        doc.text(line, 150, y + 10 + (i * 6));
+                    });
+                    
+                    y += Math.max(imgHeight, 40) + 20;
+                } catch (error) {
+                    console.error('Error adding image:', error);
+                    y += 20;
+                }
+            });
+            
+            doc.save(`Declaratie_${currentDate.replace(/\//g, '-')}.pdf`);
+            showNotification('PDF is gegenereerd');
+        }
+
+        function sendEmailOnly() {
+            const rows = document.querySelectorAll('#declarationBody tr');
+            const categories = {};
+            let totalAmount = 0;
+            
+            rows.forEach(row => {
+                const category = row.cells[3].querySelector('select').value;
+                const amount = parseFloat(row.cells[4].textContent.replace('€', '').replace(',', '.'));
+                if (!categories[category]) categories[category] = 0;
+                if (!isNaN(amount)) {
+                    categories[category] += amount;
+                    totalAmount += amount;
+                }
+            });
+
+            let emailBody = 'Beste,\n\nHierbij mijn declaratie.\n\nSpecificatie:\n\n';
+            
+            Object.entries(categories)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .forEach(([category, amount]) => {
+                    emailBody += `${category}: €${amount.toFixed(2)}\n`;
+                });
+            
+            emailBody += `\nTotaalbedrag: €${totalAmount.toFixed(2)}\n\n`;
+            emailBody += 'Met vriendelijke groet,\nRené Lutjenkossink';
+            
+            const mailtoLink = `mailto:invoices@ncubed.nl?cc=rene.lutjenkossink@ncubed.nl&subject=Declaratie ${new Date().toLocaleDateString('nl-NL')}&body=${encodeURIComponent(emailBody)}`;
+            
+            window.location.href = mailtoLink;
+            showNotification('Email wordt voorbereid');
+        }
+
+        // Initialize
+        initializeWorker().catch(error => {
+            console.error('Error initializing Tesseract worker:', error);
+            showNotification('Fout bij initialiseren van tekstherkenning', 'error');
+        });
+    </script>
+</body>
+</html>
