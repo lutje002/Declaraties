@@ -29,7 +29,268 @@
             --safe-area-inset-bottom: env(safe-area-inset-bottom);
         }
 
-        /* Styles omitted for brevity */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: calc(20px + var(--safe-area-inset-top)) 20px calc(20px + var(--safe-area-inset-bottom));
+            min-height: 100vh;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--blue-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .upload-container {
+            border: 2px dashed var(--blue-color);
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 10px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container.dragover {
+            background-color: var(--blue-light);
+            border-color: var(--blue-color);
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .receipt-preview {
+            position: relative;
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .receipt-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .receipt-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: var(--blue-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .receipt-image {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--pink-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button-blue {
+            background-color: var(--blue-color);
+            color: white;
+        }
+
+        .button-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .button-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--blue-light);
+            border-top: 4px solid var(--blue-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: calc(20px + var(--safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .category-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .editable-cell {
+            cursor: pointer;
+        }
+
+        .editable-cell:hover {
+            background-color: var(--blue-light);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                margin: 0 auto;
+            }
+
+            .button-container {
+                justify-content: flex-end;
+            }
+
+            .button {
+                width: auto;
+            }
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            body {
+                padding-top: calc(20px + env(safe-area-inset-top));
+                padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            }
+
+            .button {
+                padding: 15px 20px;
+            }
+
+            select {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -86,7 +347,459 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // JavaScript code omitted for brevity
+        const CATEGORIES = [
+            "Reiskosten - OV",
+            "Reiskosten - Auto",
+            "Reiskosten - Taxi",
+            "Reiskosten - Vliegtickets",
+            "Reiskosten - Parkeren",
+            "Kantoorartikelen",
+            "Kantoor - Meubilair",
+            "Kantoor - Apparatuur",
+            "ICT - Hardware",
+            "ICT - Software",
+            "ICT - Cloud Services",
+            "ICT - Telefonie",
+            "Representatie - Lunch",
+            "Representatie - Diner",
+            "Representatie - Koffie",
+            "Representatie - Relatiegeschenken",
+            "Opleiding - Cursussen",
+            "Opleiding - Boeken",
+            "Opleiding - Conferenties",
+            "Marketing - Advertenties",
+            "Marketing - Promotiemateriaal",
+            "Verblijfskosten - Hotel",
+            "Verblijfskosten - Overig",
+            "Verzekeringen",
+            "Abonnementen",
+            "Overig"
+        ].sort();
+
+        let worker = null;
+        let receiptImages = [];
+        let nextReceiptNumber = 1;
+
+        const dropZone = document.getElementById('dropZone');
+        const photoInput = document.getElementById('photoInput');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        photoInput.addEventListener('change', handleFileSelect, false);
+
+        function highlight(e) {
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading(show = true) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        async function initializeWorker() {
+            if (!worker) {
+                worker = await Tesseract.createWorker();
+                await worker.loadLanguage('nld');
+                await worker.initialize('nld');
+            }
+        }
+
+        async function handleFiles(files) {
+            showLoading(true);
+            
+            try {
+                await initializeWorker();
+                
+                for (const file of files) {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = async (e) => {
+                            addPreview(e.target.result, nextReceiptNumber);
+                            receiptImages.push({
+                                number: nextReceiptNumber,
+                                data: e.target.result
+                            });
+                            await processImage(e.target.result, nextReceiptNumber);
+                            nextReceiptNumber++;
+                            updateReceiptNumbers();
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                }
+            } catch (error) {
+                showNotification(`Fout bij verwerken van bonnen: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function addPreview(imageData, number) {
+            const previewContainer = document.getElementById('previewContainer');
+            
+            const preview = document.createElement('div');
+            preview.className = 'receipt-preview';
+            preview.dataset.number = number;
+            
+            const numberLabel = document.createElement('div');
+            numberLabel.className = 'receipt-number';
+            numberLabel.textContent = number;
+            
+            const img = document.createElement('img');
+            img.src = imageData;
+            img.className = 'receipt-image';
+            img.alt = `Bon ${number}`;
+            
+            preview.appendChild(numberLabel);
+            preview.appendChild(img);
+            previewContainer.appendChild(preview);
+        }
+
+        function updateReceiptNumbers() {
+            const rows = document.querySelectorAll('#declarationBody tr');
+            const previews = document.querySelectorAll('.receipt-preview');
+            
+            rows.forEach((row, index) => {
+                const newNumber = index + 1;
+                row.cells[0].textContent = newNumber;
+                row.dataset.number = newNumber;
+            });
+
+            previews.forEach((preview, index) => {
+                const newNumber = index + 1;
+                preview.querySelector('.receipt-number').textContent = newNumber;
+                preview.dataset.number = newNumber;
+            });
+
+            receiptImages = receiptImages.map((img, index) => ({
+                ...img,
+                number: index + 1
+            }));
+
+            nextReceiptNumber = Math.max(rows.length, previews.length) + 1;
+        }
+
+        function removeRow(button) {
+            const row = button.closest('tr');
+            const number = parseInt(row.dataset.number);
+            
+            const preview = document.querySelector(`.receipt-preview[data-number="${number}"]`);
+            if (preview) {
+                preview.remove();
+            }
+            
+            receiptImages = receiptImages.filter(img => img.number !== number);
+            row.remove();
+            
+            updateReceiptNumbers();
+            updateTotal();
+        }
+
+        async function processImage(imageData, receiptNumber) {
+            try {
+                const { data: { text } } = await worker.recognize(imageData);
+                const result = extractInformation(text);
+                addToTable(result, receiptNumber);
+            } catch (error) {
+                console.error('Error processing image:', error);
+                addToTable({
+                    date: '',
+                    name: 'Handmatig invullen',
+                    amount: '0.00'
+                }, receiptNumber);
+            }
+        }
+
+        function extractInformation(text) {
+            const lines = text.split('\n');
+            
+            const datePattern = /(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/;
+            const dateMatch = text.match(datePattern);
+            const date = dateMatch ? formatDate(dateMatch[1]) : '';
+
+            const name = lines[0] || 'Onbekend';
+
+            const amountPattern = /(?:totaal|total|te betalen|sum|eur|€)\s*[€]?\s*(\d+[.,]\d{2})/i;
+            const amountMatch = text.match(amountPattern);
+            const amount = amountMatch 
+                ? amountMatch[1].replace(',', '.')
+                : findHighestAmount(text);
+
+            return { date, name: name.trim(), amount };
+        }
+
+        function findHighestAmount(text) {
+            const amounts = text.match(/\d+[.,]\d{2}/g) || [];
+            const numbers = amounts.map(amount => 
+                parseFloat(amount.replace(',', '.'))
+            );
+            return Math.max(0, ...numbers).toFixed(2);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            
+            const parts = dateStr.split(/[-/]/);
+            if (parts.length !== 3) return dateStr;
+            
+            let [day, month, year] = parts;
+            
+            if (year.length === 2) {
+                year = '20' + year;
+            }
+            
+            day = day.padStart(2, '0');
+            month = month.padStart(2, '0');
+            
+            return `${day}-${month}-${year}`;
+        }
+
+        function makeEditable(element) {
+            const currentValue = element.textContent.replace('€', '');
+            const input = document.createElement('input');
+            input.type = element.textContent.includes('€') ? 'number' : 'text';
+            input.step = '0.01';
+            input.value = currentValue;
+            input.style.width = '100%';
+            input.style.padding = '4px';
+            input.style.border = '1px solid #ddd';
+            input.style.borderRadius = '4px';
+            
+            input.onblur = function() {
+                if (input.type === 'number') {
+                    const amount = parseFloat(this.value);
+                    element.textContent = !isNaN(amount) ? `€${amount.toFixed(2)}` : '€0.00';
+                } else {
+                    element.textContent = this.value;
+                }
+                updateTotal();
+            };
+            
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    this.blur();
+                }
+            };
+            
+            element.textContent = '';
+            element.appendChild(input);
+            input.focus();
+        }
+
+        function addToTable(result, receiptNumber) {
+            const tbody = document.getElementById('declarationBody');
+            const row = document.createElement('tr');
+            row.dataset.number = receiptNumber;
+            
+            const amountCell = document.createElement('td');
+            amountCell.className = 'editable-cell';
+            amountCell.textContent = `€${parseFloat(result.amount).toFixed(2)}`;
+            amountCell.onclick = () => makeEditable(amountCell);
+
+            const categorySelect = document.createElement('select');
+            categorySelect.className = 'category-select';
+            categorySelect.innerHTML = CATEGORIES.map(cat => 
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+
+            row.innerHTML = `
+                <td>${receiptNumber}</td>
+                <td class="editable-cell" onclick="makeEditable(this)">${result.date}</td>
+                <td class="editable-cell" onclick="makeEditable(this)">${result.name}</td>
+                <td></td>
+                <td></td>
+                <td>
+                    <button class="button button-danger" style="padding: 4px 8px; width: auto;" onclick="removeRow(this)">✕</button>
+                </td>
+            `;
+
+            row.cells[3].appendChild(categorySelect);
+            row.cells[4].replaceWith(amountCell);
+            
+            tbody.appendChild(row);
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const rows = document.querySelectorAll('#declarationBody tr');
+            let total = 0;
+            
+            rows.forEach(row => {
+                const amount = parseFloat(row.cells[4].textContent.replace('€', ''));
+                if (!isNaN(amount)) total += amount;
+            });
+            
+            document.getElementById('declarationTotal').textContent = `€${total.toFixed(2)}`;
+        }
+
+        function clearAll() {
+            if (confirm('Weet je zeker dat je alles wilt wissen?')) {
+                document.getElementById('previewContainer').innerHTML = '';
+                document.getElementById('declarationBody').innerHTML = '';
+                document.getElementById('declarationTotal').textContent = '€0,00';
+                receiptImages = [];
+                nextReceiptNumber = 1;
+                photoInput.value = '';
+                showNotification('Alles is gewist');
+            }
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const currentDate = new Date().toLocaleDateString('nl-NL');
+            const clientProject = document.getElementById('clientProject').value; // Get Klant/Project input
+            
+            // Afzender gegevens
+            doc.setFontSize(10);
+            doc.text([
+                'Afzender:',
+                'René Lutjenkossink',
+                'Wilhelminastraat 73',
+                '7001 GV Doetinchem',
+                '',
+                'Tel: +31 (0)610750680',
+                'E-mail: rene.lutjenkossink@ncubed.nl',
+                'IBAN: NL21RABO 0370019466'
+            ], 20, 20);
+            
+            // Ontvanger gegevens
+            doc.text([
+                'Ontvanger:',
+                'Ncubed B.V.',
+                'Van Deventerlaan 30-40',
+                '3528 AE Utrecht',
+                't.a.v. Rob Visser'
+            ], 120, 20);
+            
+            // Titel en datum
+            doc.setFontSize(16);
+            doc.text('Declaratie Overzicht', 20, 70);
+            doc.text(`Project/Klant: ${clientProject}`, 20, 80); // Include Klant/Project in PDF
+            
+            doc.setFontSize(12);
+            doc.text(`Datum: ${currentDate}`, 20, 90);
+            
+            // Tabel met declaraties
+            const tableData = Array.from(document.querySelectorAll('#declarationBody tr')).map(row => [
+                row.cells[0].textContent,
+                row.cells[1].textContent,
+                row.cells[2].textContent,
+                row.cells[3].querySelector('select').value,
+                row.cells[4].textContent
+            ]);
+
+            doc.autoTable({
+                startY: 100,
+                head: [['Bon #', 'Datum', 'Naam', 'Categorie', 'Bedrag']],
+                body: tableData,
+                foot: [[
+                    {content: 'Totaal', colSpan: 4},
+                    document.getElementById('declarationTotal').textContent
+                ]],
+                theme: 'grid',
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                },
+                headStyles: {
+                    fillColor: [233, 30, 99], // Knal roze (#E91E63)
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                footStyles: {
+                    fillColor: [187, 222, 251],
+                    textColor: 0,
+                    fontStyle: 'bold'
+                }
+            });
+
+            // Bonnen toevoegen
+            let y = doc.lastAutoTable.finalY + 20;
+            
+            receiptImages.forEach((receipt) => {
+                if (y + 80 > doc.internal.pageSize.height) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.text(`Bon #${receipt.number}:`, 20, y);
+                y += 10;
+                
+                try {
+                    doc.addImage(receipt.data, 'JPEG', 20, y, 120, 0);
+                    
+                    const imgData = new Image();
+                    imgData.src = receipt.data;
+                    const aspectRatio = imgData.height / imgData.width;
+                    const imgHeight = 120 * aspectRatio;
+                    
+                    const row = document.querySelector(`#declarationBody tr[data-number="${receipt.number}"]`);
+                    const summary = [
+                        `Datum: ${row.cells[1].textContent}`,
+                        `Naam: ${row.cells[2].textContent}`,
+                        `Categorie: ${row.cells[3].querySelector('select').value}`,
+                        `Bedrag: ${row.cells[4].textContent}`
+                    ];
+                    
+                    summary.forEach((line, i) => {
+                        doc.text(line, 150, y + 10 + (i * 6));
+                    });
+                    
+                    y += Math.max(imgHeight, 40) + 20;
+                } catch (error) {
+                    console.error('Error adding image:', error);
+                    y += 20;
+                }
+            });
+            
+            doc.save(`Declaratie_${currentDate.replace(/\//g, '-')}.pdf`);
+            showNotification('PDF is gegenereerd');
+        }
 
         function sendEmailOnly() {
             const rows = document.querySelectorAll('#declarationBody tr');
@@ -127,4 +840,5 @@
     </script>
 </body>
 </html>
+
 
